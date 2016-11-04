@@ -70,8 +70,6 @@ StateMachine.prototype.run_next_state = function() {
 };
 
 StateMachine.prototype.define_state = function(gen) {
-  console.log("hi");
-  
   return function(cb) {
     co(gen).then(function() {
       cb();
