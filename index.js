@@ -7,6 +7,7 @@ function StateMachine(interval) {
   this.interrupt_state = undefined;
   this.running = false;
   this.started = false;
+  this.defined_states = {};
 }
 
 StateMachine.prototype.start = function(interval) {
@@ -36,6 +37,10 @@ StateMachine.prototype.timeout = function() {
 };
 
 StateMachine.prototype.set_next_state = function(state) {
+  if (typeof(state) == 'string') {
+    state = this.defined_states[state];
+  }
+  
   this.next_state = state;
   if (!this.running) {
     this.run_next_state();
@@ -43,6 +48,10 @@ StateMachine.prototype.set_next_state = function(state) {
 };
 
 StateMachine.prototype.set_interrupt_state = function(state) {
+  if (typeof(state) == 'string') {
+    state = this.defined_states[state];
+  }
+  
   this.interrupt_state = state;
   if (!this.running) {
     this.run_next_state();
@@ -62,6 +71,9 @@ StateMachine.prototype.run_next_state = function() {
     this.state(function(next_state) {
       self.running = false;
       if (next_state != undefined) {
+        if (typeof(next_state) == 'string') {
+          next_state = self.defined_states[next_state];
+        }
         self.next_state = next_state;
       }
       self.run_next_state();
@@ -69,12 +81,36 @@ StateMachine.prototype.run_next_state = function() {
   }
 };
 
-StateMachine.prototype.define_state = function(gen) {
-  return function(cb) {
-    co(gen).then(function() {
-      cb();
-    });
-  };
+StateMachine.prototype.define_state = function(state, gen) {
+
+  var f = gen || state;
+
+  if (isGeneratorFunction(f)) {
+    var g = f;
+
+    f = function(cb) {
+      co(g).then(function() {
+        cb();
+      });
+    };
+  }
+
+  if (typeof(state) == 'string') {
+    this.defined_states[state] = f;
+  }
+
+  return f;
 };
+
+function isGenerator(obj) {
+  return 'function' == typeof obj.next && 'function' == typeof obj.throw;
+}
+
+function isGeneratorFunction(obj) {
+  var constructor = obj.constructor;
+  if (!constructor) return false;
+  if ('GeneratorFunction' === constructor.name || 'GeneratorFunction' === constructor.displayName) return true;
+  return isGenerator(constructor.prototype);
+}
 
 module.exports = StateMachine;
