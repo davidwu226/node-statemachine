@@ -7,9 +7,14 @@ function StateMachine(interval) {
   this.interrupt_state = undefined;
   this.running = false;
   this.started = false;
+  this.immediate_next_state = true;
   this.defined_states = {};
 }
 
+StateMachine.prototype.set_immediate = function(enable) {
+  this.immediate_next_state = enable;
+};
+  
 StateMachine.prototype.start = function(interval) {
   if (!this.started) {
     this.interval = interval || 2000;
@@ -64,10 +69,11 @@ StateMachine.prototype.run_next_state = function() {
   if (this.interrupt_state != undefined) {
     this.state = this.interrupt_state;
     this.interrupt_state = undefined;
-  }
+  }  
   if (this.state != undefined) {
     var self = this;
     this.running = true;
+    this.immediate_next_state = true;
     this.state(function(next_state) {
       self.running = false;
       if (next_state != undefined) {
@@ -76,7 +82,9 @@ StateMachine.prototype.run_next_state = function() {
         }
         self.next_state = next_state;
       }
-      self.run_next_state();
+      if (self.immediate_next_state) {
+        self.run_next_state();
+      }
     });
   }
 };

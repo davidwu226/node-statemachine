@@ -1,6 +1,6 @@
 {
   "name": "node-statemachine",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Interruptible and repeatable state machines.",
   "main": "index.js",
   "scripts": {
