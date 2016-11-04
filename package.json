@@ -1,0 +1,29 @@
+{
+  "name": "node-statemachine",
+  "version": "0.1.0",
+  "description": "Interruptible and repeatable state machines.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidwu226/node-statemachine.git"
+  },
+  "keywords": [
+    "state",
+    "machine",
+    "automata",
+    "co",
+    "interruptible"
+  ],
+  "author": "David Wu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/davidwu226/node-statemachine/issues"
+  },
+  "homepage": "https://github.com/davidwu226/node-statemachine#readme",
+  "dependencies": {
+    "co": "^4.6.0"
+  }
+}
